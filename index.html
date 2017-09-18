@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>test</title>
+	<meta charset="utf-8">
+<style type="text/css">
+html{
+	margin: 5px;
+	background-color:pink;
+	font-size: 10px;
+}
+</style>
+
+</head>
+<body>
+<div style="display: block;margin: 0 auto;width:500px;height:500px;border: 1px solid #111">
+	<textarea id="text" style="height:380px;display: block;width: 490px;margin-left: auto;margin-right: auto;line-height: 21px;font-size:20px;overflow: auto;"></textarea>
+	<input id="uptext" type="text" style="height:30px;width: 350px;display: inline-block;font: 20px;margin-top: 30px;margin-left:5px;"></input>
+	<input id="up" type="button" value="发送消息" style="width: 100px;height: 30px" onclick="javascript:send()"></input>
+	<input id="nickname" type="text" style="height:30px;width: 200px;display: inline-block;font: 20px;margin-top: 5px;margin-left:5px;"></input>
+	<input type="button" value="设定昵称" style="width: 100px;height: 30px" onclick="javascript:setNick()"></input>
+	请设定昵称再加入聊天
+</div>
+</body>
+<script type="text/javascript" src="./static/socket.io.js">
+</script>
+<script type="text/javascript">
+	var text=document.getElementById("text");
+    var uptext=document.getElementById("uptext");	
+    var nickname=document.getElementById("nickname");
+    uptext.onkeydown = function(e){
+    	var e = e || window.event;
+    	if(e.keyCode === 13) {
+			send();
+		}
+    }
+    var socket=io.connect('http://222.205.97.160:3000');
+    socket.on("news",function(data){
+    	text.value=text.value+data.hello+"\n";
+    })
+    function send(){
+    	 var data=nickname.value+":"+uptext.value;
+      // text.value=text.value+data+"\n";
+    	uptext.value=null;
+    	socket.emit("chat",data);
+    
+    }
+    socket.on("notice",function(data){
+    	text.value=text.value+data.msg+"\n";
+    
+    })
+    function setNick(){
+         var data=nickname.value;
+         socket.emit("setNick",data);
+    }
+    socket.on('log up',function(data){
+    	text.value=text.value+data.nick+"\n";
+    });
+</script>
+</html>
